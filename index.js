@@ -38,6 +38,44 @@ app.post('/employee_db', (req, res) => {
 
 const selection = {
     async selectDepartment() { const department = await db.query('SELECT * FROM department')
+    console.table(department)
+},
+    async newDepartment(){
+        let answer = await inquirer.prompt([{
+            type: 'input',
+            name: 'addDepartment',
+            message: 'Would you like to add a department?'
+        }])
+        await db.query('INSERT INTO department SET name = ?', res.addDepartment)
+        const newDepartment = await db.query('SELECT * FROM department')
+        console.table(newDepartment)
+    },
+    async selectEmployee() { const employee = await db.query('SELECT * FROM employee')
+    console.table(employee)
+},
+    async newEmployee() {
+        let answer = await inquirer.prompt([{
+            type: 'input',
+            name: 'addEmployeeFirst_name',
+            message: 'What is the first name of the employee?'
+        },
+        {
+            type: 'input',
+            name: 'addEmployeeLast_name',
+            message: 'What is the last name of the employee?'
+        },
+        {
+            type: 'input',
+            name: 'addRole_id',
+            message: 'What is the role number/id of this employee?'
+        },
+        {
+            type: 'confirm',
+            name: 'addManager_id',
+            message: 'Does this employee have a manager that they report to?'
+        }
+        }])
+        await db.query('INSERT INTO employee SET first_name=?, last_name=?, role_id=?, manager_id, department=?, employee_id=?, department_id=?')
     }
 }
 
