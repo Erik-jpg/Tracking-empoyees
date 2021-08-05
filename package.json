@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/Erik-jpg/Tracking-empoyees#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
+    "eslint": "^7.32.0",
     "inquirer": "^8.1.2",
     "mysql": "^2.18.1",
     "node.js": "^0.0.1-security"
