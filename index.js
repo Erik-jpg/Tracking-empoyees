@@ -9,7 +9,7 @@ const db = mysql.createConnection(
       user: 'root',
       // MySQL password
       password: '345trehgf503(_)@m3H0lyFuck3r',
-      database: 'classlist_db'
+      database: 'employee_db'
     },
     console.log('connected to db!')
 );
@@ -26,15 +26,18 @@ app.get('/employee_db', (req, res) => {
 })
 
 //adding an employee
-app.post('/employee_db', (req, res) => {
-    let sql = 'INSERT INTO employee(first_name, last_name, role_id, manager_id, department, employee_id, department_id)'
-    db.query(sql, err => {
-        if (err) {
-            throw err
-        }
-        res.send('employee created');
-    })
-})
+
+async openApp(){
+let decision = await inquirer.prompt([
+    {
+        type:'list',
+        name: 'decisions',
+        message: 'What would you like to do?', 
+        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee'] 
+    }
+])
+}
+
 
 const selection = {
     async selectDepartment() { const department = await db.query('SELECT * FROM department')
@@ -54,7 +57,8 @@ const selection = {
     console.table(employee)
 },
     async newEmployee() {
-        let answer = await inquirer.prompt([{
+        let answer = await inquirer.prompt([
+            {
             type: 'input',
             name: 'addEmployeeFirst_name',
             message: 'What is the first name of the employee?'
@@ -67,20 +71,41 @@ const selection = {
         {
             type: 'input',
             name: 'addRole_id',
-            message: 'What is the role number/id of this employee?'
+            message: 'What is the role id of this employee?'
         },
         {
             type: 'confirm',
             name: 'addManager_id',
             message: 'Does this employee have a manager that they report to?'
+        },
+        {
+            type: 'input',
+            name: 'addDepartment',
+            message: 'What is the department this employee will be working in?'
+        },
+        {
+            type:'input',
+            name:'addEmployee_id',
+            message: 'What is the I.D. number for this employee?'
+        },
+        {
+            type: 'input',
+            name: 'addDepartment_id',
+            message: 'What is the I.D. number of the department this employee will be working in?'
+        },
+        {
+            type: 'input',
+            name: 'addSalary',
+            message: 'What is the annual salary of this employee?'
         }
-        }])
+        ]);
         await db.query('INSERT INTO employee SET first_name=?, last_name=?, role_id=?, manager_id, department=?, employee_id=?, department_id=?')
     }
+},
+
+async selectRole() => { const role = await db.query('SELECT * FROM role')
+    console.table(role)
 }
-
-
-
 //presented with all the options: view all departments, roles, employees, add a department, add an employee, update an employee
 //view departments (department id),roles (job title, role id, their department, and department id), employees (employee id, first and last name, job title, department, salaries, and manager)
 //prompted to add a department and does such
