@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 const db = mysql.createConnection({
         host: 'localhost',
@@ -13,16 +13,16 @@ const db = mysql.createConnection({
     console.log('connected to db!')
 );
 
-//view everything
-app.get('/employee_db', (req, res) => {
-    let sql = 'SELECT * FROM employee'
-    db.query(sql, err => {
-        if (err) {
-            throw err
-        }
-        res.send('DESCRIBE employee');
-    }),
-}),
+// //view everything
+// app.get('/employee_db', (req, res) => {
+//     let sql = 'SELECT * FROM employee'
+//     db.query(sql, err => {
+//         if (err) {
+//             throw err
+//         }
+//         res.send('DESCRIBE employee');
+//     })
+// }),
 
 //adding an employee
 
@@ -53,27 +53,26 @@ async function openApp() {
                 newEmployee()
             break;
             case 'update an employee':
-            function()
+                updateEmployeeRole            
             break;
             case 'delete a department':
-            function()
+            // function()
             break;
             case 'delete a role':
-            function()
+            // function()
             break;
-        default: 'delete an employee':
-            function()
+        default: 'delete an employee'
+            // function()
             break;
     }
-}
+};
 
 
-const selection = {
-        async selectDepartment() {
+        async function selectDepartment() {
             const department = await db.query('SELECT * FROM department')
             console.table(department)
-        },
-        async newDepartment() {
+        };
+        async function newDepartment() {
             let answer = await inquirer.prompt([{
                     type: 'input',
                     name: 'addDepartment',
@@ -93,12 +92,12 @@ const selection = {
             await db.query('INSERT INTO department SET name = ?, id=?', res.addDepartment)
             const newDepartment = await db.query('SELECT * FROM department')
             console.table(newDepartment)
-        },
-        async selectEmployee() {
+        };
+        async function selectEmployee() {
             const employee = await db.query('SELECT * FROM employee')
             console.table(employee)
-        },
-        async newEmployee() {
+        };
+        async function newEmployee() {
             let answer = await inquirer.prompt([{
                     type: 'input',
                     name: 'addEmployeeFirst_name',
@@ -137,7 +136,7 @@ const selection = {
             ]);
             await db.query('INSERT INTO employee SET first_name=?, last_name=?, role_id=?, manager_id, department=?, employee_id=?, department_id=?')
         }
-    }
+    
 
     async function selectRole () {
         const role = await db.query('SELECT * FROM role');
@@ -166,9 +165,36 @@ async function newRole() {
             message: 'What is the I.D. for this new role?'
         },
     ]);
+    await db.query('INSERT INTO role SET role_id=?, role_title=?, role_salary=?, department_id=?');
 }
-await db.query('INSERT INTO role SET role_id=?, role_title=?, role_salary=?, department_id=/');
-//presented with all the options: view all departments, roles, employees, add a department, add an employee, update an employee
+
+async function updateEmployeeRole() {
+    let answer = await inquirer.prompt([{
+        type:'input',
+	name: 'selectEmployeeFirstName',
+	message: 'please enter the first_name of the employee you would like to update.'
+	},
+	{
+	type: 'input',
+	name: 'selectEmployeeLastName',
+	message: 'please enter the last name of the employee you would like to update.'
+	},
+    {
+        type : 'input',
+        name: 'updateEmployee',
+        message: 'What is the mew role of this employee?'
+    },
+    ]);
+    await db.query('UPDATE employee SET role_id=? WHERE first_name =? AND last_name =?', )
+}
+
+
+
+
+
+
+openApp();
+    //presented with all the options: view all departments, roles, employees, add a department, add an employee, update an employee
 //view departments (department id),roles (job title, role id, their department, and department id), employees (employee id, first and last name, job title, department, salaries, and manager)
 //prompted to add a department and does such
 //when selected add role, prompted to enter name, salary, and department for the role and then stored in the database
