@@ -26,13 +26,45 @@ app.get('/employee_db', (req, res) => {
 
 //adding an employee
 
-async openApp() {
+async function openApp() {
     let decision = await inquirer.prompt([{
         type: 'list',
         name: 'decisions',
         message: 'What would you like to do?',
-        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee']
+        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee', 'delete a department', 'delete a role', 'delete an employee']
     }])
+    switch (decision.decisions) {
+            case 'view all departments': 
+                selectDepartment()
+            break;
+            case 'view all roles':
+                selectRole()
+            break;
+            case 'view all employees':
+                selectEmployee()
+            break;
+            case 'add a department':
+                newDepartment()
+            break;
+            case 'add a role':
+                newRole()
+            break;
+            case 'add an employee':
+                newEmployee()
+            break;
+            case 'update an employee':
+            function()
+            break;
+            case 'delete a department':
+            function()
+            break;
+            case 'delete a role':
+            function()
+            break;
+        default: 'delete an employee':
+            function()
+            break;
+    }
 }
 
 
@@ -105,14 +137,14 @@ const selection = {
             ]);
             await db.query('INSERT INTO employee SET first_name=?, last_name=?, role_id=?, manager_id, department=?, employee_id=?, department_id=?')
         }
-    },
+    }
 
-    async selectRole() => {
+    async function selectRole () {
         const role = await db.query('SELECT * FROM role');
         console.table(role)
     };
 
-async newRole() => {
+async function newRole() {
     let answer = await inquirer.prompt([{
             type: 'input',
             name: 'role_id',
