@@ -45,9 +45,6 @@ async function openApp() {
         "add a role",
         "add an employee",
         "update an employee",
-        "delete a department",
-        "delete a role",
-        "delete an employee",
       ],
     },
   ]);
@@ -71,17 +68,7 @@ async function openApp() {
       newEmployee();
       break;
     case "update an employee":
-      updateEmployeeRole;
-      break;
-    case "delete a department":
-      // function()
-      break;
-    case "delete a role":
-      // function()
-      break;
-    default:
-      "delete an employee";
-      // function()
+      updateAnEmployee();
       break;
   }
 }
@@ -124,12 +111,12 @@ async function newEmployee() {
     {
       type: "input",
       name: "role_id",
-      message: "What is the role id of this employee?",
+      message: "What is the role id number of this employee? Engineering is 1, Administration is 2, and Management is 3.",
     },
     {
-      type: "confirm",
+      type: "input",
       name: "manager_id",
-      message: "Does this employee have a manager that they report to?",
+      message: "what is the manager's id number that they report to?",
     },
   ]);
   await db.query(
@@ -154,12 +141,12 @@ async function newRole() {
     },
     {
       type: "input",
-      name: "roleTitle",
+      name: "role_title",
       message: "What is the title of this new role?",
     },
     {
       type: "input",
-      name: "roleSalary",
+      name: "role_salary",
       message: "What is the salary for this new Role?",
     },
     {
@@ -169,36 +156,41 @@ async function newRole() {
     },
   ]);
   await db.query(
-    "INSERT INTO role SET role_id=?, role_title=?, role_salary=?, department_id=?"
-  );
+    "INSERT INTO role SET role_id=?, role_title=?, role_salary=?, department_id=?",
+    [answer.role_id, answer.role_title, answer.role_salary, answer.department_id]
+  );console.log('New Role added');
   openApp();
 }
 
-async function updateEmployeeRole() {
+async function updateAnEmployee() {
   let answer = await inquirer.prompt([
     {
       type: "input",
-      name: "selectEmployeeFirstName",
+      name: "first_nameEmployeeUpdate",
       message:
-        "please enter the first_name of the employee you would like to update.",
+        "please enter the first name of the employee you would like to update.",
     },
     {
       type: "input",
-      name: "selectEmployeeLastName",
-      message:
-        "please enter the last name of the employee you would like to update.",
+      name: "last_nameEmployeeUpdate",
+      message: 
+      "please enter the last name of the employee you would like to update",
     },
     {
       type: "input",
-      name: "updateEmployee",
-      message: "What is the mew role of this employee?",
+      name: "updating_employee",
+      message:
+        "please enter the new role_id number of this employee.",
     },
   ]);
   await db.query(
-    "UPDATE employee SET role_id=? WHERE first_name =? AND last_name =?"
-  );
+    "UPDATE employee SET role_id=?, WHERE first_name =?, last_name =?",
+    [answer.updating_employee, answer.first_nameEmployeeUpdate, answer.last_nameEmployeeUpdate]
+  );console.log('Employee updated');
+
   openApp();
 }
+
 
 // openApp();
 //presented with all the options: view all departments, roles, employees, add a department, add an employee, update an employee
@@ -206,4 +198,4 @@ async function updateEmployeeRole() {
 //prompted to add a department and does such
 //when selected add role, prompted to enter name, salary, and department for the role and then stored in the database
 //add employee, then prompted to enter first name, last name, role, and manager, which is then add to db
-//update an  employee, prompted to then select employee from stored database, then update their new role and then it is stored in database
+//update an  employee, prompted to then select employee from stored database, then update their new role and then it is stored in database}
