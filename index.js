@@ -163,52 +163,59 @@ async function newRole() {
 }
 
 async function updateAnEmployee() {
-  const employee = await db.query("SELECT * FROM employee");
-  console.log({ employee });
   let answer = await inquirer.prompt([
-
+    //find employee by employee id
     {
       type: "list",
-      name:"select_employee",
-      message: "Which employee you would like to update?",
-      choices: employee.map(
-        employee =>
-          `${employee.id} ${employee.first_name} ${employee.last_name}`,
-      ),
-    },
-  ]);
-  console.log({ employee });
-  const employee_id = employee.select_employee.split(' ')[0];
+      name: "employee_id",
+      message:
+        "please choose the following employee from the list.",
+       choices: async()=>{
+          const employees = await db.query('SELECT * FROM employee')
+          const newEmployees = employees.map((employee)=>{
+            return {
+                 name: employee.first_name + " " + employee.last_name,
+                 value: employee.id
+            }
+          })
+          return newEmployees;
 
-  // get roles and choice one
-  const roles = await db.query('SELECT * FROM role');
-  console.log({ role_id });
-  const newRole = inquirer.prompt([
+       }
+    },
     {
-      type: 'list',
-      message: "What is the employee's new role?",
-      name: 'selectedValue',
-      choices: roles.map(role => `${role.id} ${role.title}`),
-    },
-  ]);
-  console.log({ newRole });
-  const role_id = newRole.selectedValue.split(' ')[0];
+      type: "list",
+      name: "role_id",
+      message: 
+      "Please choose the new role for that employee",
+      choices: async()=>{
+        const roles = await db.query('SELECT * FROM role')
+        const newRoles = roles.map((role)=>{
+          return {
+            name: role.title,
+            value: role.id
+          }
+        })
 
-  // update employee role
-  const updateResult = await db.query(
-    'UPDATE employee SET role_id = ? WHERE id = ?',
-    [role_id, employee_id],
-  );
-  console.log({ updateResult });
+        return newRoles;
+      }
+    }
+]);
+console.log(answer.role_id, answer.employee_id)
+  await db.query(
+    "UPDATE employee SET role_id=? WHERE  id=?",
+    [answer.role_id, answer.employee_id], (err, results) => {
+      if (err) throw err;
+      openApp();
+    }
+  );console.log('Employee updated');
 
-  return Promise.resolve();
-};
+  openApp();
+  }
 
 
-// openApp();
 //presented with all the options: view all departments, roles, employees, add a department, add an employee, update an employee
 //view departments (department id),roles (job title, role id, their department, and department id), employees (employee id, first and last name, job title, department, salaries, and manager)
 //prompted to add a department and does such
 //when selected add role, prompted to enter name, salary, and department for the role and then stored in the database
 //add employee, then prompted to enter first name, last name, role, and manager, which is then add to db
-//update an  employee, prompted to then select employee from stored database, then update their new role and then it is stored in database}
+//update an  employee, prompted to then select employee from stored database, then update their new role and then it is stored in database
