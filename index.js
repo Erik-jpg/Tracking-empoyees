@@ -122,7 +122,7 @@ async function newEmployee() {
   await db.query(
     "INSERT INTO employee SET first_name=?, last_name=?, role_id=?, manager_id=?",
     [answer.first_name, answer.last_name, answer.role_id, answer.manager_id]
-  ); console.log('employee has been added.');
+  ); console.table('employee has been added.');
   openApp();
 }
 
@@ -158,38 +158,51 @@ async function newRole() {
   await db.query(
     "INSERT INTO role SET role_id=?, role_title=?, role_salary=?, department_id=?",
     [answer.role_id, answer.role_title, answer.role_salary, answer.department_id]
-  );console.log('New Role added');
+  );console.table('New Role added');
   openApp();
 }
 
 async function updateAnEmployee() {
+  const employee = await db.query("SELECT * FROM employee");
+  console.log({ employee });
   let answer = await inquirer.prompt([
+
     {
-      type: "input",
-      name: "first_nameEmployeeUpdate",
-      message:
-        "please enter the first name of the employee you would like to update.",
-    },
-    {
-      type: "input",
-      name: "last_nameEmployeeUpdate",
-      message: 
-      "please enter the last name of the employee you would like to update",
-    },
-    {
-      type: "input",
-      name: "updating_employee",
-      message:
-        "please enter the new role_id number of this employee.",
+      type: "list",
+      name:"select_employee",
+      message: "Which employee you would like to update?",
+      choices: employee.map(
+        employee =>
+          `${employee.id} ${employee.first_name} ${employee.last_name}`,
+      ),
     },
   ]);
-  await db.query(
-    "UPDATE employee SET role_id=?, WHERE first_name =?, last_name =?",
-    [answer.updating_employee, answer.first_nameEmployeeUpdate, answer.last_nameEmployeeUpdate]
-  );console.log('Employee updated');
+  console.log({ employee });
+  const employee_id = employee.select_employee.split(' ')[0];
 
-  openApp();
-}
+  // get roles and choice one
+  const roles = await db.query('SELECT * FROM role');
+  console.log({ role_id });
+  const newRole = inquirer.prompt([
+    {
+      type: 'list',
+      message: "What is the employee's new role?",
+      name: 'selectedValue',
+      choices: roles.map(role => `${role.id} ${role.title}`),
+    },
+  ]);
+  console.log({ newRole });
+  const role_id = newRole.selectedValue.split(' ')[0];
+
+  // update employee role
+  const updateResult = await db.query(
+    'UPDATE employee SET role_id = ? WHERE id = ?',
+    [role_id, employee_id],
+  );
+  console.log({ updateResult });
+
+  return Promise.resolve();
+};
 
 
 // openApp();
