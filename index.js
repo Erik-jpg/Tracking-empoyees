@@ -136,11 +136,6 @@ async function newRole() {
   let answer = await inquirer.prompt([
     {
       type: "input",
-      name: "role_id",
-      message: "What is the I.D. of the new Role?",
-    },
-    {
-      type: "input",
       name: "role_title",
       message: "What is the title of this new role?",
     },
@@ -156,8 +151,8 @@ async function newRole() {
     },
   ]);
   await db.query(
-    "INSERT INTO role SET role_id=?, role_title=?, role_salary=?, department_id=?",
-    [answer.role_id, answer.role_title, answer.role_salary, answer.department_id]
+    "INSERT INTO role SET role_title=?, role_salary=?, department_id=?",
+    [answer.role_title, answer.role_salary, answer.department_id]
   );console.table('New Role added');
   openApp();
 }
