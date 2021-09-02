@@ -18,19 +18,6 @@ db.connect();
 db.query = util.promisify(db.query);
 openApp();
 
-// //view everything
-// app.get('/employee_db', (req, res) => {
-//     let sql = 'SELECT * FROM employee'
-//     db.query(sql, err => {
-//         if (err) {
-//             throw err
-//         }
-//         res.send('DESCRIBE employee');
-//     })
-// }),
-
-//adding an employee
-
 async function openApp() {
   let decision = await inquirer.prompt([
     {
@@ -45,6 +32,7 @@ async function openApp() {
         "add a role",
         "add an employee",
         "update an employee",
+        "delete a role",
       ],
     },
   ]);
@@ -69,6 +57,9 @@ async function openApp() {
       break;
     case "update an employee":
       updateAnEmployee();
+      break;
+    case "delete a role":
+        removeRole();
       break;
   }
 }
@@ -151,7 +142,7 @@ async function newRole() {
     },
   ]);
   await db.query(
-    "INSERT INTO role SET role_title=?, role_salary=?, department_id=?",
+    "INSERT INTO role SET title=?, salary=?, department_id=?",
     [answer.role_title, answer.role_salary, answer.department_id]
   );console.table('New Role added');
   openApp();
@@ -174,8 +165,7 @@ async function updateAnEmployee() {
             }
           })
           return newEmployees;
-
-       }
+}
     },
     {
       type: "list",
@@ -195,18 +185,47 @@ async function updateAnEmployee() {
       }
     }
 ]);
-console.log(answer.role_id, answer.employee_id)
+// console.log(answer.role_id, answer.employee_id)
   await db.query(
     "UPDATE employee SET role_id=? WHERE  id=?",
     [answer.role_id, answer.employee_id], (err, results) => {
       if (err) throw err;
-      openApp();
+      openApp();console.log('Employee updated');
     }
-  );console.log('Employee updated');
+  );
 
   openApp();
   }
 
+  async function removeRole() {
+    let answer = await inquirer.prompt([
+      {
+        type: "list",
+        name: "role_id",
+        message:
+          "please choose the following role from the list.",
+         choices: async()=>{
+            const roles = await db.query('SELECT * FROM role')
+            const removedRoles = roles.map((role)=>{
+              return {
+                   name: role.title,
+                   value: role.id
+              }
+            })
+            return removedRoles;
+          }
+      },
+    ]);
+    console.log(answer.role_title, answer.role_id);
+    await db.query(
+      "DELETE FROM role WHERE role_title=? AND role_id=?", 
+      [answer.role_title, answer.role_id], (err, results) => {
+        if (err) throw err;
+        openApp();
+      }
+    )
+    console.log('Role removed');
+  }
 
 //presented with all the options: view all departments, roles, employees, add a department, add an employee, update an employee
 //view departments (department id),roles (job title, role id, their department, and department id), employees (employee id, first and last name, job title, department, salaries, and manager)
