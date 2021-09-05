@@ -218,7 +218,7 @@ async function updateAnEmployee() {
     ]);
     console.log(answer.role_title, answer.role_id);
     await db.query(
-      "DELETE FROM role WHERE role_title=? AND role_id=?", 
+      "DELETE FROM role WHERE role_title=? role_id=?", 
       [answer.role_title, answer.role_id], (err, results) => {
         if (err) throw err;
         openApp();
