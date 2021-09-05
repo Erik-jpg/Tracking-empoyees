@@ -187,7 +187,7 @@ async function updateAnEmployee() {
 ]);
 // console.log(answer.role_id, answer.employee_id)
   await db.query(
-    "UPDATE employee SET role_id=? WHERE  id=?",
+    "UPDATE employee SET role_id=? WHERE id=?",
     [answer.role_id, answer.employee_id], (err, results) => {
       if (err) throw err;
       openApp();console.log('Employee updated');
@@ -216,11 +216,12 @@ async function updateAnEmployee() {
           }
       },
     ]);
-    console.log(answer.role_title, answer.role_id);
     await db.query(
-      "DELETE FROM role WHERE role_title=? role_id=?", 
-      [answer.role_title, answer.role_id], (err, results) => {
+      "DELETE FROM role WHERE id=?", 
+      [answer.role_id], (err, results) => {
         if (err) throw err;
+        console.log(results);
+        console.log(role_title, role_id);
         openApp();
       }
     )
